@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <!-- 设置背景色为透明色 -->
+            <solid android:color="#00FFFFFF"/>
+            <!-- 设置红色边框 -->
+
+            <stroke android:width="6dp" android:color="#FFFFFF" />
+            <!--<stroke android:width="10dp" android:color="#ff0000" />-->
+
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <!-- 设置背景色为透明色 -->
+            <solid android:color="#00FFFFFF"/>
+            <!-- 设置红色边框 -->
+
+            <!--<stroke android:width="50dp" android:color="#FFFFFF" />-->
+            <stroke android:width="4dp" android:color="#999999" />
+
+        </shape>
+    </item>
+
+
+</layer-list>

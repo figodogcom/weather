@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 指定按钮按下时的图片 -->
+    <item android:state_pressed="true"
+        android:drawable="@drawable/bg_item_pressed"
+        />
+    <!-- 指定按钮松开时的图片 -->
+    <item
+        android:drawable="@drawable/bg_item_normal"
+        />
+
+</selector>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android">-->
+    <!--<stroke-->
+        <!--android:width="2dp"-->
+        <!--android:color="#bfbfbf" />-->
+    <!--<corners android:topLeftRadius="10dp"-->
+        <!--android:topRightRadius="10dp"-->
+        <!--android:bottomRightRadius="10dp"-->
+        <!--android:bottomLeftRadius="10dp"/>-->
+    <!---->
+<!--</shape>-->
+
+
