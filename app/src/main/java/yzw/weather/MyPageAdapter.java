@@ -14,9 +14,9 @@ import yzw.weather.fragment.SettingCommonFragment;
 public class MyPageAdapter extends FragmentStatePagerAdapter {
 
     private String[] mTitles;
-    private List<SettingCommonFragment> mFragments;
+    private List<Fragment> mFragments;
 
-    public MyPageAdapter(FragmentManager fm , String[] mTitles, List<SettingCommonFragment> mFragments) {
+    public MyPageAdapter(FragmentManager fm , String[] mTitles, List<Fragment> mFragments) {
         super (fm);
         this. mTitles = mTitles;
         this. mFragments = mFragments;

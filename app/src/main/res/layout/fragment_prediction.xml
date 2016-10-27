@@ -98,13 +98,28 @@
         />
 
     <TextView
+        android:clickable="true"
+        android:id="@+id/one_tempertrue_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="c"
-        android:textSize="60sp"
+        android:text="C"
+        android:textSize="34sp"
         android:layout_marginLeft="14dp"
+        android:layout_marginTop="10dp"
         android:layout_alignTop="@+id/one_textView2"
         android:layout_toRightOf="@id/one_textView2"
+        />
+    
+    <TextView
+        android:clickable="true"
+        android:id="@+id/one_tempertrue_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="F"
+        android:textSize="30sp"
+        android:layout_below="@+id/one_tempertrue_up"
+        android:layout_toRightOf="@+id/one_textView2"
+        android:layout_marginLeft="14dp"
         />
 
 

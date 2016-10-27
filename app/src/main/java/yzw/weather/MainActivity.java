@@ -37,7 +37,7 @@ import yzw.weather.model.City;
 /**
  * Created by yangzhiwei on 2016/8/8.
  */
-public class MainActivity extends AppCompatActivity implements CollectionFragment.CollectionFragmentCallback,LeftmenuAdapter.leftmenucallback{
+public class MainActivity extends AppCompatActivity implements CollectionFragment.CollectionFragmentCallback,LeftmenuAdapter.leftmenucallback,PredictionFragment.predictioncallback{
     private DrawerLayout drawer;
 //    private NavigationView mNavigationView;
     private RecyclerView mRecyclerView;
@@ -282,4 +282,8 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
     }
 
 
+    @Override
+    public void predictioncallback() {
+        selectItem(1);
+    }
 }

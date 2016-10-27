@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding= "utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
         android:text="显示温度:"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -15,11 +17,15 @@
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:id="@+id/fragment_setting_common_huashi"
+            android:textSize="18sp"
             android:text="华氏度"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <RadioButton
+            android:id="@+id/fragment_setting_common_sheshi"
+            android:textSize="18sp"
             android:text="摄氏度"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -27,19 +33,23 @@
     </RadioGroup>
 
     <ImageView
+        android:layout_marginTop="10dp"
+
         android:background="#666666"
         android:layout_width="match_parent"
         android:layout_height="1dp" />
 
     <TextView
+        android:layout_marginTop="10dp"
         android:text="启动位置"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_marginTop="10dp"
         android:text="应用重启后更改生效"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -49,11 +59,15 @@
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
             android:text="始终检测我的位置"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <RadioButton
+            android:layout_marginTop="10dp"
+            android:textSize="18sp"
             android:text="默认位置"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -61,6 +75,17 @@
 
 
     </RadioGroup>
+
+    <android.support.v7.widget.SearchView
+
+        android:iconifiedByDefault="false"
+        android:layout_marginTop="10dp"
+        android:id="@+id/fragment_setting_searchview"
+        android:queryHint="广东省广州市"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.SearchView>
 
 
 

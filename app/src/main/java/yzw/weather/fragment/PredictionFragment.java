@@ -1,5 +1,7 @@
 package yzw.weather.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,6 +40,8 @@ public class PredictionFragment extends Fragment {
     private String mCityName;
     private Call callWeather;
     private Call mCallWeather;
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     public static Fragment newInstance(long id, String name) {
 
@@ -53,6 +57,35 @@ public class PredictionFragment extends Fragment {
                              Bundle savedInstanceState) {
         int i = getArguments().getInt("item_position");
         View rootView = inflater.inflate(R.layout.fragment_prediction, container, false);
+        preferences = getActivity().getSharedPreferences("weather", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        final predictioncallback mpredictioncallback = (predictioncallback)getActivity();
+
+        final TextView mTextView_up = (TextView) rootView.findViewById(R.id.one_tempertrue_up);
+        final TextView mTextView_down = (TextView) rootView.findViewById(R.id.one_tempertrue_down);
+
+
+        mTextView_down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("OUT",preferences.getString("tempertruemode", null));
+                if (preferences.getString("tempertruemode", null).equals("sheshi") ) {
+                    editor.putString("tempertruemode", "huashi");
+                    Log.i("IN1",preferences.getString("tempertruemode", null));
+                    mTextView_up.setText("F");
+                    mTextView_down.setText("C");
+                } else {
+                    editor.putString("tempertruemode", "sheshi");
+                    Log.i("IN2",preferences.getString("tempertruemode", null));
+                    mTextView_up.setText("C");
+                    mTextView_down.setText("F");
+                }
+                editor.commit();
+                Log.i("Result",preferences.getString("tempertruemode", null));
+                mpredictioncallback.predictioncallback();
+
+            }
+        });
 
         receive();
         okHttp_synchronousGet();
@@ -187,7 +220,9 @@ public class PredictionFragment extends Fragment {
         final TextView textView10 = (TextView) rootView.findViewById(R.id.one_textView10);
 
         textView.setText(mCityName);
-        textView2.setText((int) oneday.main.temp + "°");
+        if (preferences.getString("tempertruemode", "sheshi").equals("sheshi"))
+            textView2.setText((int) oneday.main.temp + "°");
+        else textView2.setText((((int) oneday.main.temp) * 9 / 5 + 32) + "°");
         textView3.setText(String.valueOf(oneday.weather.get(0).description));
         textView5.setText("风速  " + oneday.wind.getDegDesc() + getString(R.string.wind_speed, (int) oneday.wind.speed) + "    湿度  " + String.valueOf(oneday.main.humidity) + "%");
 
@@ -210,8 +245,15 @@ public class PredictionFragment extends Fragment {
         seven_textView3.setText(item.weather.get(0).description);
         seven_imageview.setImageResource(Utils.getIconResId(item.weather.get(0).icon));
         seven_textView4.setText(String.valueOf(getdate((long) item.dt * 1000l)));
-        seven_textView5.setText(String.valueOf((int) item.temp.max) + "°");
-        seven_textView6.setText(String.valueOf((int) item.temp.min) + "°");
+        if (preferences.getString("tempertruemode", "sheshi").equals("sheshi")){
+            seven_textView5.setText(String.valueOf((int) item.temp.max) + "°");
+            seven_textView6.setText(String.valueOf((int) item.temp.min) + "°");
+        }
+        else{
+            seven_textView5.setText(String.valueOf(   (((int) item.temp.max)*9/5+32)      ) + "°");
+            seven_textView6.setText(String.valueOf(   (((int) item.temp.min)*9/5+32)     ) + "°");
+        }
+
 
     }
 
@@ -247,6 +289,10 @@ public class PredictionFragment extends Fragment {
             output2(child, sevenday.list.get(i));
             scrollContentLayout.addView(child);
         }
+    }
+
+    public interface predictioncallback{
+        void predictioncallback();
     }
 }
 
