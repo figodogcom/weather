@@ -32,6 +32,9 @@ public class SettingCommonFragment extends Fragment {
         preferences = getActivity().getSharedPreferences("weather", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
+        if(preferences.getString("tempertruemode",null).equals("sheshi"))
+            mRadioButtonh_sheshi.setChecked(true);
+        else mRadioButtonh_huashi.setChecked(true);
         mRadioButtonh_huashi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

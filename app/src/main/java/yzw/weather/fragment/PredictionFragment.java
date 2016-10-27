@@ -68,20 +68,20 @@ public class PredictionFragment extends Fragment {
         mTextView_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("OUT",preferences.getString("tempertruemode", null));
-                if (preferences.getString("tempertruemode", null).equals("sheshi") ) {
+//                Log.i("OUT",preferences.getString("tempertruemode", null));
+                if (preferences.getString("tempertruemode", "sheshi").equals("sheshi") ) {
                     editor.putString("tempertruemode", "huashi");
-                    Log.i("IN1",preferences.getString("tempertruemode", null));
+//                    Log.i("IN1",preferences.getString("tempertruemode", null));
                     mTextView_up.setText("F");
                     mTextView_down.setText("C");
                 } else {
                     editor.putString("tempertruemode", "sheshi");
-                    Log.i("IN2",preferences.getString("tempertruemode", null));
+//                    Log.i("IN2",preferences.getString("tempertruemode", null));
                     mTextView_up.setText("C");
                     mTextView_down.setText("F");
                 }
                 editor.commit();
-                Log.i("Result",preferences.getString("tempertruemode", null));
+//                Log.i("Result",preferences.getString("tempertruemode", null));
                 mpredictioncallback.predictioncallback();
 
             }
