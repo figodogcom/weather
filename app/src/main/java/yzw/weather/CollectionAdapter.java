@@ -3,6 +3,7 @@ package yzw.weather;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +26,7 @@ import yzw.weather.model.Oneday;
 /**
  * Created by yangzhiwei on 2016/8/25.
  */
-public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.BaseViewHolder> {
+public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.BaseViewHolder>  {
 
     private CollectionAdapterCallback mCallbacks;
     private Context context;
@@ -34,6 +35,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 //    private List<Oneday> citys;
     private Cursor cursor;
     private Cursor cursor2;
+
 
 //    private Oneday od;
 //    public static int cityid;
@@ -45,7 +47,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 //    public MyAdapter(Fragment fragment){
 //        this.fragment = fragment;
 //    }
-    public CollectionAdapter(CollectionAdapterCallback callback, /*Map<Integer, String> cityMap, */Cursor cursor,Cursor cursor2, Context context) {
+    public CollectionAdapter(CollectionAdapterCallback callback, /*Map<Integer, String> cityMap, */Cursor cursor, Cursor cursor2, Context context) {
         this.mCallbacks = callback;
 //        this.cityMap = cityMap;
         this.cursor = cursor;
@@ -62,7 +64,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
         return this.cursor;
     }
 
-    public static  abstract class BaseViewHolder extends RecyclerView.ViewHolder {
+
+
+    public static abstract class BaseViewHolder extends RecyclerView.ViewHolder {
 
         public BaseViewHolder(View itemView) {
             super(itemView);
@@ -79,6 +83,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
         public final TextView textview_wind_deg;
         public final TextView textview_main_humidity;
         public final TextView textview_wind_speed;
+        public final TextView textView_temperture;
 
         public ViewHolderCollection(View v) {
             super(v);
@@ -90,6 +95,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
             textview_wind_deg = (TextView) v.findViewById(R.id.collection_textView6);
             textview_main_humidity = (TextView) v.findViewById(R.id.collection_textView7);
             textview_wind_speed = (TextView) v.findViewById(R.id.collection_textView8);
+            textView_temperture = (TextView) v.findViewById(R.id.collection_temperturemode);
 
         }
     }
@@ -102,12 +108,12 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
         }
     }
 
-    public class ViewHolderText extends BaseViewHolder{
+    public class ViewHolderText extends BaseViewHolder {
         public final TextView textview_text;
 
         public ViewHolderText(View itemView) {
             super(itemView);
-            textview_text = (TextView)itemView.findViewById(R.id.collection_text);
+            textview_text = (TextView) itemView.findViewById(R.id.collection_text);
         }
     }
 
@@ -120,14 +126,13 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 //        if(position == cursor.getCount()){
 //            return VIEW_TYPE_ADD;
 //        }else return VIEW_TYPE_COLLECTION;
-        if(position == 0 || position == 2)
+        if (position == 0 || position == 2)
             return VIEW_TYPE_TEXT;
-        else if(position == 1)
+        else if (position == 1)
             return VIEW_TYPE_COLLECTION;
-        else if(position == cursor.getCount() + 3)
+        else if (position == cursor.getCount() + 3)
             return VIEW_TYPE_ADD;
         else return VIEW_TYPE_COLLECTION;
-
 
 
 //        return super.getItemViewType(position);
@@ -136,7 +141,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
     public BaseViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v;
 
-        if(viewType == VIEW_TYPE_COLLECTION){
+        if (viewType == VIEW_TYPE_COLLECTION) {
             v = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.fragment_collection_view, viewGroup, false);
 //            final View child = LayoutInflater.from(getContext()).einflate(R.layout.sevenday, scrollContntLayout, false);
@@ -144,40 +149,32 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 //                child.setBackgroundResource(R.drawable.boder);
 
 
-
             return new ViewHolderCollection(v);
-        }
-
-        else if(viewType == VIEW_TYPE_ADD){
+        } else if (viewType == VIEW_TYPE_ADD) {
             v = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.fragment_collection_addview, viewGroup, false);
             return new ViewHolderAdd(v);
-        }
-
-        else {
+        } else {
             v = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.fragment_collection_text,viewGroup,false);
+                    .inflate(R.layout.fragment_collection_text, viewGroup, false);
             return new ViewHolderText(v);
         }
-
-
 
 
     }
 
 
-
-
-
-
     @Override
     public void onBindViewHolder(BaseViewHolder viewHolder, final int position) {
+        SharedPreferences preferences = context.getSharedPreferences("weather", context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
 
 //        final Oneday od = citys.get(position);
 
 //        viewHolder.collection_textView.setText(String.valueOf(cityMap.get(od.id)));
 
-        Log.i("position=",String.valueOf(position));
+        Log.i("position=", String.valueOf(position));
 
 //        int section = getSection(position);
 //
@@ -202,67 +199,74 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 //        }
 
 
-
-
-
-        if (position == 0){
-            ViewHolderText viewHolderText = (ViewHolderText)viewHolder;
+        if (position == 0) {
+            ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
             viewHolderText.textview_text.setText("启动位置");
 
-        }
-            else if (position == 1){
-                cursor2.moveToFirst();
-                final long _id = cursor2.getLong(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_ID);
-                final String name = cursor2.getString(City.COLUMN_INDEX_NAME);
-                String weather_description = cursor2.getString(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WEATHER_DESCRIPTION);
-                float main_temp = cursor2.getInt(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP);
-                float main_temp_min = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP_MIN);
-                float main_temp_max = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP_MAX);
-                float wind_deg = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WIND_DEG);
-                float wind_speed = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WIND_SPEED);
-                int main_humidity = cursor2.getInt(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_HUMIDITY);
+        } else if (position == 1) {
+            cursor2.moveToFirst();
+            final long _id = cursor2.getLong(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_ID);
+            final String name = cursor2.getString(City.COLUMN_INDEX_NAME);
+            String weather_description = cursor2.getString(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WEATHER_DESCRIPTION);
+            float main_temp = cursor2.getInt(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP);
+            float main_temp_min = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP_MIN);
+            float main_temp_max = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_TEMP_MAX);
+            float wind_deg = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WIND_DEG);
+            float wind_speed = cursor2.getFloat(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_WIND_SPEED);
+            int main_humidity = cursor2.getInt(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_MAIN_HUMIDITY);
+
 //                Log.i("SSS",weather_description);
 
 
-                ViewHolderCollection viewHolder_collection = (ViewHolderCollection) viewHolder;
-                viewHolder_collection.collection_textView.setText(name);
-                viewHolder_collection.textview_main_temp.setText(String.valueOf((int) main_temp));
-                viewHolder_collection.textview_weather_description.setText(weather_description);
-                viewHolder_collection.textview_main_temp_max.setText((int) main_temp_max + "°");
-                viewHolder_collection.textview_main_temp_min.setText((int) main_temp_min + "°");
-                viewHolder_collection.textview_wind_deg.setText(getDegDesc(wind_deg));
+            ViewHolderCollection viewHolder_collection = (ViewHolderCollection) viewHolder;
+            viewHolder_collection.collection_textView.setText(name);
+            viewHolder_collection.textview_main_temp.setText(String.valueOf((int) main_temp));
+            viewHolder_collection.textview_weather_description.setText(weather_description);
+            viewHolder_collection.textview_main_temp_max.setText((int) main_temp_max + "°");
+            viewHolder_collection.textview_main_temp_min.setText((int) main_temp_min + "°");
+            viewHolder_collection.textview_wind_deg.setText(getDegDesc(wind_deg));
+
+            viewHolder_collection.textview_main_humidity.setText(main_humidity + "%");
+
+
+            if (preferences.getString("tempertruemode", null).equals("sheshi")){
+                viewHolder_collection.textView_temperture.setText("°C");
                 viewHolder_collection.textview_wind_speed.setText((int) wind_speed + "级");
-                viewHolder_collection.textview_main_humidity.setText(main_humidity + "%");
-                viewHolder_collection.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i("SSSS",String.valueOf(_id));
-                        mCallbacks.onCollectionAdapterItemSelected(_id, name);
-                    }
-                });
-
-
-
             }
-            else if (position == 2){
-                ViewHolderText viewHolderText = (ViewHolderText)viewHolder;
-                viewHolderText.textview_text.setText("最喜欢的地方");
-            }
-            else if (position == 3 + cursor.getCount()){
-                ViewHolderAdd viewHolder_add = (ViewHolderAdd) viewHolder;
-                viewHolder_add.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, SearchActivity.class);
-                        context.startActivity(intent);
 
 
-                    }
-                });
-            }
             else{
-            Log.i("BBC",String.valueOf(position));
-            cursor.moveToPosition(position-3);
+                viewHolder_collection.textView_temperture.setText("°F");
+                viewHolder_collection.textview_wind_speed.setText((int) wind_speed + "里/时");
+            }
+
+
+            viewHolder_collection.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("SSSS", String.valueOf(_id));
+                    mCallbacks.onCollectionAdapterItemSelected(_id, name);
+                }
+            });
+
+
+        } else if (position == 2) {
+            ViewHolderText viewHolderText = (ViewHolderText) viewHolder;
+            viewHolderText.textview_text.setText("最喜欢的地方");
+        } else if (position == 3 + cursor.getCount()) {
+            ViewHolderAdd viewHolder_add = (ViewHolderAdd) viewHolder;
+            viewHolder_add.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, SearchActivity.class);
+                    context.startActivity(intent);
+
+
+                }
+            });
+        } else {
+            Log.i("BBC", String.valueOf(position));
+            cursor.moveToPosition(position - 3);
 
             final long _id = cursor.getLong(City.COLUMN_COUNT + Oneday.COLUMN_INDEX_ID);
             final String name = cursor.getString(City.COLUMN_INDEX_NAME);
@@ -284,25 +288,37 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
             viewHolder_collection.textview_wind_speed.setText((int) wind_speed + "级");
             viewHolder_collection.textview_main_humidity.setText(main_humidity + "%");
 
+            if (preferences.getString("tempertruemode", null).equals("sheshi")){
+                viewHolder_collection.textView_temperture.setText("°C");
+                viewHolder_collection.textview_wind_speed.setText((int) wind_speed + "级");
+            }
+
+
+            else{
+                viewHolder_collection.textView_temperture.setText("°F");
+                viewHolder_collection.textview_wind_speed.setText((int) wind_speed + "里/时");
+            }
+
             viewHolder_collection.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("SSSS",String.valueOf(_id));
+                    Log.i("SSSS", String.valueOf(_id));
                     mCallbacks.onCollectionAdapterItemSelected(_id, name);
+
                 }
             });
 
             viewHolder_collection.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Log.i("ZZZ","ZZZ");
-                    showPopupWindow(v,position,_id);
+                    Log.i("ZZZ", "ZZZ");
+                    showPopupWindow(v, position, _id);
 
                     return true;
                 }
             });
 
-            }
+        }
 
 //        if(position != cursor.getCount()){
 //            cursor.moveToPosition(position);
@@ -379,7 +395,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
     public int getItemCount() {
         if (cursor != null) {
             Log.i("ZZZ", String.valueOf(cursor.getCount()));
-            return (cursor.getCount()+4);
+            return (cursor.getCount() + 4);
         }
         return 3;
     }
@@ -389,7 +405,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 
     }
 
-    public interface CollectionAdaptertosearch{
+    public interface CollectionAdaptertosearch {
         void CollectionAdaptertosearchclick();
     }
 
@@ -424,7 +440,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
             public void onClick(View v) {
                 MyDatabaseHelper dbHelper = new MyDatabaseHelper(context);           /////??????????????
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Log.i("qqqq","delete from favourite where _id = " + cursor.getLong(City.COLUMN_INDEX_ID));
+                Log.i("qqqq", "delete from favourite where _id = " + cursor.getLong(City.COLUMN_INDEX_ID));
 //                db.execSQL("delete from favourite where _id = " + cursor.getLong(City.COLUMN_INDEX_ID)); ///导致删除收藏不正确，原因待查
 //                db.execSQL("delete from weather where _id = " + cursor.getLong(City.COLUMN_INDEX_ID));
                 db.execSQL("delete from favourite where _id = " + _id);
@@ -435,10 +451,8 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
                 popupWindow.dismiss();
 
 
-
             }
         });
-
 
 
         popupWindow.setTouchable(true);
@@ -447,7 +461,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
 
 
                 return false;
@@ -466,6 +479,10 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Ba
 
 
     }
+
+
+
+
 
 //    public static class ViewHolder extends RecyclerView.ViewHolder {
 //        public final TextView collection_textView;

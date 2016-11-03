@@ -2,6 +2,8 @@ package yzw.weather.fragment;
 
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
@@ -55,6 +58,9 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
     private Cursor cursor2;
     private Cursor cursor;
     private Cursor cursor3;
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
 
     public static Fragment newInstance() {
         Fragment fragment = new CollectionFragment();
@@ -72,6 +78,9 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
                 container, false);
 
 
+        preferences = getActivity().getSharedPreferences("weather", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.collection_item);
 
@@ -85,19 +94,16 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
         loadstartData();
 
 
-        cursor = db.rawQuery("select * from favourite",null);
+        cursor = db.rawQuery("select * from favourite", null);
         cursor2 = db.rawQuery("select * from favourite left join weather on favourite._id = weather._id", null);
-        cursor3 = db.rawQuery("select * from start left join weather on start._id = weather._id",null);
+        cursor3 = db.rawQuery("select * from start left join weather on start._id = weather._id", null);
 
-        mAdapter = new CollectionAdapter(this, cursor2,cursor3,getContext());
+        mAdapter = new CollectionAdapter(this, cursor2, cursor3, getContext());
         mRecyclerView.setAdapter(mAdapter);
 
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-
 
 
         loadData();
@@ -106,19 +112,21 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
         return rootView;
     }
 
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        Log.i("DDD","DDD");
-        cursor = db.rawQuery("select * from favourite",null);
+        Log.i("DDD", "DDD");
+        cursor = db.rawQuery("select * from favourite", null);
         loadData();
 
     }
 
     private void loadData() {
-
         String nCityId = getNCityId();
-
-        String onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + nCityId + "&units=metric&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
+        String onedayurl;
+        if (preferences.getString("tempertruemode", null).equals("sheshi"))
+            onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + nCityId + "&units=metric&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
+        else
+            onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + nCityId + "&units=imperial&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
         Log.i("AAAA", onedayurl);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(onedayurl).build();
@@ -170,8 +178,12 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
                     @Override
                     public void run() {
                         mAdapter.changeData(cursor);
+
                     }
                 });
+
+
+
 
             }
         });
@@ -181,8 +193,11 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
     private void loadstartData() {
 
         long startid = getstartid();
-
-        String onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + startid + "&units=metric&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
+        String onedayurl;
+        if (preferences.getString("tempertruemode", null).equals("sheshi"))
+            onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + startid + "&units=metric&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
+        else
+            onedayurl = "http://api.openweathermap.org/data/2.5/group?id=" + startid + "&units=imperial&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&lang=zh_cn";
         Log.i("AAAA", onedayurl);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(onedayurl).build();
@@ -231,19 +246,20 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
 
 
 
+
             }
         });
 
     }
-
-    private void setstartcity(){
+// TODO
+    private void setstartcity() {
         ContentValues cv = new ContentValues();
         cv.put("_id", 1809858);
         cv.put("name", "广州");
         cv.put("country", "CN");
         cv.put("lon", 110.1);
         cv.put("lat", 112.2);
-        db.insert("start",null,cv);
+        db.insert("start", null, cv);
 
     }
 
@@ -262,9 +278,9 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
         return ncityid;
     }
 
-    private long getstartid(){
+    private long getstartid() {
         Long startid;
-        Cursor cursor = db.rawQuery("select * from start",null);
+        Cursor cursor = db.rawQuery("select * from start", null);
         cursor.moveToPosition(0);
         startid = cursor.getLong(0);
         return startid;
@@ -273,7 +289,7 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
     @Override
     public void onCollectionAdapterItemSelected(long cityId, String cityName) {
         mCollectionCallbacks = (CollectionFragmentCallback) getActivity();
-        Log.i("YYYYYY",String.valueOf(cityId));
+        Log.i("YYYYYY", String.valueOf(cityId));
         mCollectionCallbacks.onCollectionFragmentClickCity(cityId, cityName);
     }
 

@@ -15,18 +15,22 @@ import android.widget.TextView;
 /**
  * Created by yangzhiwei on 2016/10/21.
  */
-public class LeftmenuAdapter extends RecyclerView.Adapter<LeftmenuAdapter.ViewHolder> {
+public class LeftmenuAdapter extends RecyclerView.Adapter<LeftmenuAdapter.ViewHolder>  {
     private leftmenucallback mleftmenucallback;
     int recyclermode;
     private Activity mActivity;
     int colorposition = -1;
     static boolean upstatus = true;
+    ViewHolder holder;
 
-    public LeftmenuAdapter(int recyclermode, Activity mActivity) {
+    public LeftmenuAdapter(int recyclermode,int colorposition,Activity mActivity) {
         this.recyclermode = recyclermode;
         this.mActivity = mActivity;
+        this.colorposition = colorposition;
 //        this.colorposition = colorposition;
     }
+
+
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,6 +56,7 @@ public class LeftmenuAdapter extends RecyclerView.Adapter<LeftmenuAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
+        this.holder = holder;   //test
         TextView mTextView = holder.mTextView;
         ImageView imageView = holder.mImageView;
         final ImageView mImageViewcolor = holder.mImageViewcolor;
@@ -143,13 +148,16 @@ public class LeftmenuAdapter extends RecyclerView.Adapter<LeftmenuAdapter.ViewHo
 
         void mleftmenucolor(int recyclermode);
 
-
     }
+
+
 
     void changedate() {
         colorposition = -1;
         notifyDataSetChanged();
     }
+
+
 
 
 }

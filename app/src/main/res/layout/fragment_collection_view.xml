@@ -44,7 +44,7 @@
         android:textSize="50dp" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/collection_temperturemode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/collection_textView2"
@@ -68,8 +68,10 @@
         android:id="@+id/collection_textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView4"
-        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/collection_textView"
+        android:layout_toRightOf="@+id/collection_temperturemode"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="10dp"
         android:text="35°"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="18dp" />
@@ -90,8 +92,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/collection_textView4"
-        android:layout_marginLeft="53dp"
-        android:layout_marginStart="53dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginStart="48dp"
         android:layout_toEndOf="@+id/collection_textView4"
         android:layout_toRightOf="@+id/collection_textView4"
         android:text="东北风"

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,7 +20,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -37,7 +40,7 @@ import yzw.weather.model.City;
 /**
  * Created by yangzhiwei on 2016/8/8.
  */
-public class MainActivity extends AppCompatActivity implements CollectionFragment.CollectionFragmentCallback,LeftmenuAdapter.leftmenucallback,PredictionFragment.predictioncallback{
+public class MainActivity extends AppCompatActivity implements CollectionFragment.CollectionFragmentCallback,LeftmenuAdapter.leftmenucallback,PredictionFragment.predictioncallback {
     private DrawerLayout drawer;
 //    private NavigationView mNavigationView;
     private RecyclerView mRecyclerView;
@@ -61,13 +64,13 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
         setSupportActionBar(toolbar);
         mRelativeLayout = (RelativeLayout)findViewById(R.id.leftmenu);
         mRecyclerView = (RecyclerView)findViewById(R.id.recycler_left_recyclerview);
-        upLeftmenuAdapter = new LeftmenuAdapter(LEFTMENU_UP,this);
+        upLeftmenuAdapter = new LeftmenuAdapter(LEFTMENU_UP,-1,this);
         mRecyclerView.setAdapter(upLeftmenuAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mRecyclerView2 = (RecyclerView)findViewById(R.id.recycler_left_recyclerview2);
-        downLeftmenuAdapter = new LeftmenuAdapter(LEFTMENU_DOWN,this);
+        downLeftmenuAdapter = new LeftmenuAdapter(LEFTMENU_DOWN,-1,this);
         mRecyclerView2.setAdapter(downLeftmenuAdapter);
         mRecyclerView2.setHasFixedSize(true);
         mRecyclerView2.setLayoutManager(new LinearLayoutManager(this));
@@ -75,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+
+
 
 
 //        MenuItem prediction = mNavigationView.getMenu().findItem(R.id.nav_prediction);
@@ -178,12 +184,14 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
 
     @Override
     public void onCollectionFragmentClickCity(long cityId, String cityName) {
+        cur = 1;
         Log.i("xxx", String.valueOf(cityId));
         editor = preferences.edit();
         editor.putLong("_id",cityId);
         editor.putString("name",cityName);
         editor.commit();
         Fragment fragment = PredictionFragment.newInstance(cityId, cityName);
+
 
         replaceFragment(fragment);
     }
@@ -205,44 +213,6 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
         return true;
     }
 
-
-    private void loadfavouriteid() {
-        AssetManager js = getAssets();
-        try {
-
-            InputStream json = js.open("city.list.json");
-            InputStreamReader reader = new InputStreamReader(json);
-            BufferedReader br = new BufferedReader(reader);
-            String line = null;
-
-            while ((line = br.readLine()) != null) {
-                Gson gson = new Gson();
-                City favourite = gson.fromJson(line, City.class);
-                Log.i("ZZZZZ",String.valueOf(favourite._id));
-
-                ContentValues cv = new ContentValues();
-                cv.put("_id", favourite._id);
-                cv.put("name", favourite.name);
-                cv.put("country", favourite.country);
-                cv.put("lon", favourite.coord.lon);
-                cv.put("lat", favourite.coord.lat);
-
-                Cursor cursor = db.rawQuery("select * from favourite where _id= " + favourite._id, null);
-                try {
-                    if (cursor.getCount() == 0) {
-                        db.insert("favourite", null, cv);
-                    } else
-                        db.update("favourite", cv, "_id=?", new String[]{String.valueOf(favourite._id)});
-                } finally {
-                    cursor.close();
-                }
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     @Override
     public void mleftmenucallback(int position) {
@@ -283,7 +253,18 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
 
 
     @Override
-    public void predictioncallback() {
+    public void predictioncallbackchangemenucolor() {
+
+//        selectItem(1);
+        mRecyclerView = (RecyclerView)findViewById(R.id.recycler_left_recyclerview);
+        upLeftmenuAdapter = new LeftmenuAdapter(LEFTMENU_UP,0,this);
+        mRecyclerView.setAdapter(upLeftmenuAdapter);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public void predictioncallbackreflesh() {
         selectItem(1);
     }
 }
