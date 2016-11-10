@@ -78,7 +78,7 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.Co
                 container, false);
 
 
-        preferences = getActivity().getSharedPreferences("weather", Context.MODE_PRIVATE);
+        preferences = getContext().getSharedPreferences("weather", Context.MODE_PRIVATE);
         editor = preferences.edit();
 
 

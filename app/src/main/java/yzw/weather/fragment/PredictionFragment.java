@@ -1,8 +1,14 @@
 package yzw.weather.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +27,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -70,12 +77,17 @@ public class PredictionFragment extends Fragment {
         monedayview = (RelativeLayout) rootView.findViewById(R.id.oneday_view);
         monedayview.setVisibility(View.INVISIBLE);
         msevendayview.setVisibility(View.INVISIBLE);
+
         oneday_requset = false;
         sevenday_request = false;
-        preferences = getActivity().getSharedPreferences("weather", Context.MODE_PRIVATE);
+        preferences = getContext().getSharedPreferences("weather", Context.MODE_PRIVATE);
         editor = preferences.edit();
         if (!preferences.contains("tempertruemode"))
             editor.putString("tempertruemode", "sheshi");
+        if (!preferences.contains("predictioncity")) {
+            editor.putString("predictioncity", "default");
+        }
+        editor.commit();
         final predictioncallback mpredictioncallback = (predictioncallback) getActivity();
         mpredictioncallback.predictioncallbackchangemenucolor();
 
@@ -120,10 +132,30 @@ public class PredictionFragment extends Fragment {
 
     private void okHttp_synchronousGet() {
         final String onedayurl;
-        if (preferences.getString("temperturemode", "sheshi").equals("sheshi"))
-            onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=" + mCityId + "&APPIDd4d7d6adac1bfbf1e6c3a78c4580c657&units=metric&lang=zh_cn";
-        else
-            onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=" + mCityId + "&APPIDd4d7d6adac1bfbf1e6c3a78c4580c657&units=imperial&lang=zh_cn";
+        final String lon = preferences.getString("lon", "");
+        final String lat = preferences.getString("lat", "");
+        Log.i("predictioncity", preferences.getString("predictioncity", ""));
+        if (preferences.getString("predictioncity", "default").equals("default")||preferences.getString("predictioncity", "default").equals("collection")) {
+            if (preferences.getString("temperturemode", "sheshi").equals("sheshi"))
+                onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=" + mCityId + "&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&units=metric&lang=zh_cn";
+            else
+                onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=" + mCityId + "&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&units=imperial&lang=zh_cn";
+        }
+        else{
+            receive_location();
+            if (preferences.getString("temperturemode", "sheshi").equals("sheshi")) {
+                onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&units=metric&lang=zh_cn" + "&lat=" + lat + "&lon=" + lon;
+                Log.i("onedayurl", onedayurl);
+
+            } else {
+
+                onedayurl = "http://api.openweathermap.org/data/2.5/weather?id=&APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&units=imperial&lang=zh_cn" + "&lat=" + lat + "&lon=" + lon;
+                Log.i("onedayurl", onedayurl);
+            }
+        }
+
+
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(onedayurl).build();
         callWeather = client.newCall(request);
@@ -195,7 +227,7 @@ public class PredictionFragment extends Fragment {
 
     private void okHttp_synchronousGet2() {
 
-        final String sevendayurl = "http://api.openweathermap.org/data/2.5/forecast/daily?APPIDd4d7d6adac1bfbf1e6c3a78c4580c657&id=" + mCityId + "&lang=zh_cn&units=metric&cnt=";
+        final String sevendayurl = "http://api.openweathermap.org/data/2.5/forecast/daily?APPID=d4d7d6adac1bfbf1e6c3a78c4580c657&id=" + mCityId + "&lang=zh_cn&units=metric&cnt=";
         final String[] zh = {""};
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(sevendayurl).build();
@@ -286,8 +318,11 @@ public class PredictionFragment extends Fragment {
         final TextView tempertrue_up = (TextView) rootView.findViewById(R.id.one_tempertrue_up);
         final TextView tempertrue_down = (TextView) rootView.findViewById(R.id.one_tempertrue_down);
 
+        if (preferences.getString("predictioncity", null).equals("default")||preferences.getString("predictioncity", null).equals("collection"))
+            textView.setText(mCityName);
+        else textView.setText(oneday.name);
 
-        textView.setText(mCityName);
+
         if (preferences.getString("tempertruemode", "sheshi").equals("sheshi")) {
             textView2.setText((int) oneday.main.temp + "°");
             tempertrue_up.setText("C");
@@ -379,6 +414,68 @@ public class PredictionFragment extends Fragment {
         void predictioncallbackchangemenucolor();
 
         void predictioncallbackreflesh();
+    }
+
+    void receive_location() {
+        final LocationManager mlocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = mlocationManager.getProviders(true);
+        for (int i = 0; i < providers.size(); i++)
+            Log.i("PPP", providers.get(i));
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+//        Location mLocation = mlocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        if (mLocation != null) {
+//            Log.i("mLocation.getLatitude()", mLocation.toString());
+//            editor.putString("lat", String.valueOf(mLocation.getLatitude()));
+//            editor.putString("lon", String.valueOf(mLocation.getLongitude()));
+//        }
+
+
+        mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER
+                , 3000, 8, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        editor.putString("lat", String.valueOf(location.getLatitude()));
+                        editor.putString("lon", String.valueOf(location.getLongitude()));
+                        Log.i("getlon", String.valueOf(location.getLongitude()));
+                        editor.putString("predictioncity", "gps");
+                        editor.commit();
+                    }
+
+                    @Override
+                    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                    }
+
+                    @Override
+                    public void onProviderEnabled(String s) {
+                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        mlocationManager.getLastKnownLocation(s);
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String s) {
+
+                    }
+                });
+
     }
 }
 

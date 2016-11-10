@@ -189,8 +189,11 @@ public class MainActivity extends AppCompatActivity implements CollectionFragmen
         editor = preferences.edit();
         editor.putLong("_id",cityId);
         editor.putString("name",cityName);
+        editor.putString("predictioncity","collection");
         editor.commit();
         Fragment fragment = PredictionFragment.newInstance(cityId, cityName);
+
+
 
 
         replaceFragment(fragment);

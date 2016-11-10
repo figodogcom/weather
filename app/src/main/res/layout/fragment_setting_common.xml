@@ -59,6 +59,7 @@
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:id="@+id/fragment_setting_common_location"
             android:layout_marginTop="10dp"
             android:textSize="18sp"
             android:text="始终检测我的位置"
@@ -66,6 +67,7 @@
             android:layout_height="wrap_content" />
 
         <RadioButton
+            android:id="@+id/fragment_setting_common_default"
             android:layout_marginTop="10dp"
             android:textSize="18sp"
             android:text="默认位置"
@@ -76,16 +78,30 @@
 
     </RadioGroup>
 
-    <android.support.v7.widget.SearchView
-
-        android:iconifiedByDefault="false"
+    <LinearLayout
         android:layout_marginTop="10dp"
-        android:id="@+id/fragment_setting_searchview"
-        android:queryHint="广东省广州市"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content">
+        android:orientation="horizontal"
+        android:background="#999999"
+        android:layout_width="280dp"
+        android:layout_height="40dp">
 
-    </android.support.v7.widget.SearchView>
+        <AutoCompleteTextView
+            android:id="@+id/fragment_setting_common_autocompletetextview"
+            android:hint="广东省珠海市"
+            android:completionThreshold="1"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:src="@drawable/ic_close_black_24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+        <ImageView
+            android:src="@drawable/ic_search_black_24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+
+    </LinearLayout>
 
 
 
