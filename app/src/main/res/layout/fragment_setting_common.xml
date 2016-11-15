@@ -78,10 +78,10 @@
 
     </RadioGroup>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:background="#999999"
+
         android:layout_width="280dp"
         android:layout_height="40dp">
 
@@ -89,19 +89,24 @@
             android:id="@+id/fragment_setting_common_autocompletetextview"
             android:hint="广东省珠海市"
             android:completionThreshold="1"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
         <ImageView
             android:src="@drawable/ic_close_black_24dp"
+            android:background="#FFFFFF"
+            android:layout_toLeftOf="@+id/fragment_setting_common_search"
             android:layout_width="40dp"
             android:layout_height="40dp" />
         <ImageView
+            android:background="#FFFFFF"
+            android:id="@+id/fragment_setting_common_search"
             android:src="@drawable/ic_search_black_24dp"
+            android:layout_alignParentRight="true"
             android:layout_width="40dp"
             android:layout_height="40dp" />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 

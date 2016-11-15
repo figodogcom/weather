@@ -19,8 +19,31 @@ import yzw.weather.model.City;
  */
 public class CityListUtil {
 
-    public static List<yzw.weather.model.City> getCityList() {
-        List<yzw.weather.model.City> list = new ArrayList<>();
+    public static List getCityList(Context context) {
+
+        List list = new ArrayList<>();
+        AssetManager js = context.getAssets();
+        try {
+
+            InputStream json = js.open("city.list.json");
+            InputStreamReader reader = new InputStreamReader(json);
+            BufferedReader br = new BufferedReader(reader);
+            String line = null;
+
+            while ((line = br.readLine()) != null) {
+                Gson gson = new Gson();
+                City city = gson.fromJson(line, City.class);
+                list.add(city.name);
+
+
+
+
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return list;
     }

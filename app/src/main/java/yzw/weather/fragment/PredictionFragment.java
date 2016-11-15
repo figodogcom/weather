@@ -439,7 +439,7 @@ public class PredictionFragment extends Fragment {
 //        }
 
 
-        mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER
+        mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER
                 , 3000, 8, new LocationListener() {
                     @Override
                     public void onLocationChanged(Location location) {
